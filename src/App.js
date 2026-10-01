@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import Directions from './components/Directions';
 import Benefits from './components/Benefits';
 import Subscribe from './components/Subscribe';
+import Footer from './components/Footer'; 
 
 const App = () => {
   const orgName = "ООО «ЛИЦА»";
@@ -26,6 +27,7 @@ const App = () => {
       <Directions items={directionsData} />
       <Benefits />
       <Subscribe orgName={orgName} />
+      <Footer orgName={orgName} /> 
     </div>
   );
 };
