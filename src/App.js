@@ -1,16 +1,12 @@
 import React from 'react';
 import './App.css';
 import Header from './components/Header';
+import Hero from './components/Hero';
 
-// Главный компонент - стрелочная функция
 const App = () => {
-  // Передача названия организации
   const orgName = "ООО «ЛИЦА»";
+  const mainTitle = "Нанимайте проверенных";
   
-  // Передача основного заголовка
-  const mainTitle = "Нанимайте проверенных кандидатов";
-  
-  // Передача массива объектов
   const directionsData = [
     { id: 1, title: "Маркетинг", badge: "40+", icon: "/img/dir.png" },
     { id: 2, title: "Разработка", badge: "80+", icon: "/img/dev.png" },
@@ -20,8 +16,8 @@ const App = () => {
   return (
     <div className="App">
       <Header orgName={orgName} />
+      <Hero mainTitle={mainTitle} />
       <main>
-        <h1>{mainTitle}</h1>
         <p>Направлений в базе: {directionsData.length}</p>
       </main>
     </div>
