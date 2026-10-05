@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import candidatesData from '../candidates.json'; 
+import candidatesData from '../data/candidates.json'; 
 import CandidateCard from '../components/CandidateCard';
 
 const CatalogPage = () => {
