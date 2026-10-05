@@ -82,11 +82,18 @@ const CatalogPage = () => {
         </div>
       </div>
 
-      <Modal 
-        isOpen={!!selectedCandidate} 
-        onClose={() => setSelectedCandidate(null)} 
-        candidate={selectedCandidate} 
-      />
+     <Modal 
+  isOpen={!!selectedCandidate} 
+  onClose={() => setSelectedCandidate(null)} 
+  candidate={selectedCandidate}
+  onEdit={(updatedCandidate) => {
+    setCandidates(candidates.map(c => 
+      c.id === updatedCandidate.id ? updatedCandidate : c
+    ));
+    setSelectedCandidate(updatedCandidate);
+  }}
+  onDelete={handleDelete}
+/>
     </main>
   );
 };
