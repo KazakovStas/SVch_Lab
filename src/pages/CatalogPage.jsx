@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import candidatesData from '../data/candidates.json'; 
+import candidatesData from '../data/candidates.json';
 import CandidateCard from '../components/CandidateCard';
+import Modal from '../components/Modal';
 
 const CatalogPage = () => {
   const [candidates, setCandidates] = useState(candidatesData);
-  
   const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   const handleDelete = (id) => {
     if (window.confirm('Вы уверены, что хотите удалить этого кандидата из базы?')) {
@@ -15,9 +16,7 @@ const CatalogPage = () => {
 
   const toggleSelect = (id) => {
     setSelectedIds(prevIds => 
-      prevIds.includes(id) 
-        ? prevIds.filter(itemId => itemId !== id) 
-        : [...prevIds, id]
+      prevIds.includes(id) ? prevIds.filter(itemId => itemId !== id) : [...prevIds, id]
     );
   };
 
@@ -50,13 +49,19 @@ const CatalogPage = () => {
                 key={candidate.id}
                 candidate={candidate}
                 isSelected={selectedIds.includes(candidate.id)}
-                onSelect={() => toggleSelect(candidate.id)}
+                onSelect={() => setSelectedCandidate(candidate)}
                 onDelete={handleDelete}
               />
             ))
           )}
         </div>
       </div>
+
+      <Modal 
+        isOpen={!!selectedCandidate} 
+        onClose={() => setSelectedCandidate(null)} 
+        candidate={selectedCandidate} 
+      />
     </main>
   );
 };
