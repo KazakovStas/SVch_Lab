@@ -1,15 +1,19 @@
 import React from 'react';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Chip, 
+  Box, 
+  Button, 
+  IconButton, 
+  Avatar 
+} from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const CandidateCard = ({ candidate, isSelected, onSelect, onDelete }) => {
   
-  const getBadgeClass = (tag) => {
-    if (tag === 'fulltime') return 'badge-fulltime';
-    if (tag === 'parttime') return 'badge-parttime';
-    if (tag === 'remote') return 'badge-remote';
-    return '';
-  };
-
   const getBadgeText = (tag) => {
     if (tag === 'fulltime') return 'Полная занятость';
     if (tag === 'parttime') return 'Частичная занятость';
@@ -17,71 +21,112 @@ const CandidateCard = ({ candidate, isSelected, onSelect, onDelete }) => {
     return tag;
   };
 
+  const getBadgeColor = (tag) => {
+    if (tag === 'fulltime') return 'success';
+    if (tag === 'parttime') return 'warning';
+    if (tag === 'remote') return 'info';
+    return 'default';
+  };
+
+  const isGradient = candidate.avatar?.startsWith('gradient-');
+  const avatarSrc = isGradient ? null : (candidate.avatar || '/img/default-avatar.png');
+
   return (
-    <div 
-      className={`candidate-card ${isSelected ? 'selected-card' : ''}`} 
+    <Card 
+      sx={{ 
+        position: 'relative', 
+        cursor: 'pointer',
+        border: isSelected ? '2px solid #1976d2' : '1px solid #e0e0e0',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: 6
+        }
+      }}
       onClick={onSelect}
-      style={{ cursor: 'pointer', position: 'relative' }}
     >
-      
-      <button 
-        className="delete-btn"
+      <IconButton 
+        sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', zIndex: 1 }}
         onClick={(e) => { 
           e.stopPropagation(); 
           onDelete(candidate.id); 
         }}
-        style={{ 
-          position: 'absolute', top: '10px', right: '10px', 
-          background: '#ff4d4f', color: 'white', border: 'none', 
-          borderRadius: '50%', width: '24px', height: '24px', 
-          cursor: 'pointer', zIndex: 10, display: 'flex', 
-          alignItems: 'center', justifyContent: 'center', fontSize: '18px'
-        }}
-        title="Удалить кандидата"
+        size="small"
       >
-        ×
-      </button>
+        <DeleteIcon color="error" fontSize="small" />
+      </IconButton>
 
-      <div className="candidate-badges">
-        {candidate.tags?.map((tag, index) => (
-          <span key={index} className={`badge ${getBadgeClass(tag)}`}>
-            {getBadgeText(tag)}
-          </span>
-        ))}
-      </div>
-      
-      <div className="candidate-avatar">
-        {candidate.avatar?.startsWith('gradient-') ? (
-          <div className="avatar-gradient" style={{ 
-            width: '104px', height: '104px', borderRadius: '50%', 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            color: '#fff', fontSize: '36px', fontWeight: '700' 
-          }}>
-            {candidate.name.charAt(0).toUpperCase()}
-          </div>
-        ) : (
-          <img src={candidate.avatar || '/img/default-avatar.png'} alt={candidate.name} />
-        )}
-      </div>
-      
-      <h3 className="candidate-name">{candidate.name}</h3>
-      <p className="candidate-position">{candidate.position}</p>
-      
-      <div className="candidate-info">
-        <p className="info-item">Опыт: {candidate.experience}</p>
-        <p className="info-item">Зарплата: от {candidate.salary?.toLocaleString() || '0'} ₽</p>
-      </div>
-      
-      <Link 
-        to={`/profile/${candidate.id}`} 
-        className="btn-candidate" 
-        onClick={(e) => e.stopPropagation()} 
-        style={{ textDecoration: 'none' }}
-      >
-        Посмотреть справку
-      </Link>
-    </div>
+      <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 3 }}>
+        
+        <Avatar
+          src={avatarSrc}
+          alt={candidate.name}
+          sx={{ 
+            width: 104, 
+            height: 104, 
+            mb: 2,
+            bgcolor: isGradient ? '#667eea' : undefined,
+            fontSize: 36,
+            fontWeight: 'bold'
+          }}
+        >
+          {!avatarSrc && candidate.name?.charAt(0).toUpperCase()}
+        </Avatar>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5, justifyContent: 'center' }}>
+          {candidate.tags?.map((tag, index) => (
+            <Chip 
+              key={index} 
+              label={getBadgeText(tag)} 
+              size="small" 
+              color={getBadgeColor(tag)}
+              variant="outlined"
+            />
+          ))}
+        </Box>
+
+        <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', mb: 0.5, textAlign: 'center' }}>
+          {candidate.name}
+        </Typography>
+        
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+          {candidate.position}
+        </Typography>
+
+        <Box sx={{ 
+          width: '100%', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 0.5, 
+          mb: 2,
+          pt: 1.5,
+          borderTop: '1px solid #e0e0e0'
+        }}>
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+            Опыт: {candidate.experience}
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+            Зарплата: от {candidate.salary?.toLocaleString()} ₽
+          </Typography>
+        </Box>
+
+        <Button 
+          variant="contained" 
+          fullWidth 
+          component={Link} 
+          to={`/profile/${candidate.id}`}
+          onClick={(e) => e.stopPropagation()}
+          sx={{ 
+            textTransform: 'none', 
+            borderRadius: 2,
+            bgcolor: '#1976d2',
+            '&:hover': { bgcolor: '#1565c0' }
+          }}
+        >
+          Посмотреть справку
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 
