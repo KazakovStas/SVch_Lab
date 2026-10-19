@@ -36,7 +36,7 @@ const Header = () => {
           <Button color="inherit" component={Link} to="/add">Попасть в базу</Button>
         </Box>
 
-        <TextField
+       <TextField
   size="small"
   placeholder="Поиск по навыкам..."
   sx={{ 
@@ -45,12 +45,14 @@ const Header = () => {
     '& .MuiInputBase-root': { color: 'white' },
     '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' }
   }}
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <SearchIcon sx={{ color: 'white' }} />
-      </InputAdornment>
-    ),
+  slotProps={{
+    input: {
+      startAdornment: (
+        <InputAdornment position="start">
+          <SearchIcon sx={{ color: 'white' }} />
+        </InputAdornment>
+      ),
+    }
   }}
 />
 

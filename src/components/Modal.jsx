@@ -36,12 +36,14 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
 
   return (
     <Dialog 
-      open={isOpen} 
-      onClose={onClose} 
-      maxWidth="sm" 
-      fullWidth
-      PaperProps={{ sx: { borderRadius: 2 } }}
-    >
+  open={isOpen} 
+  onClose={onClose} 
+  maxWidth="sm" 
+  fullWidth
+  slotProps={{
+    paper: { sx: { borderRadius: 2 } }
+  }}
+>
       <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
           {isEditing ? 'Редактировать кандидата' : candidate?.name || 'Кандидат'}
