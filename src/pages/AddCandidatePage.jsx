@@ -1,39 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  Container, Paper, Typography, TextField, Button, Box,
+  FormControl, InputLabel, Select, MenuItem,
+  FormGroup, FormControlLabel, Checkbox,
+  Snackbar, Alert
+} from '@mui/material';
 
 const AddCandidatePage = () => {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
-    name: '',
-    position: '',
-    experience: '',
-    salary: '',
-    category: '',
-    location: '',
-    age: '',
-    telegram: '',
-    portfolio: '',
-    general_info: '',
-    reason: '',
-    tags: []
+    name: '', position: '', experience: '', salary: '', category: '',
+    location: '', age: '', telegram: '', portfolio: '', general_info: '', reason: '', tags: []
   });
+
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleTagChange = (e) => {
     const { value, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      tags: checked 
-        ? [...prev.tags, value]
-        : prev.tags.filter(tag => tag !== value)
+      tags: checked ? [...prev.tags, value] : prev.tags.filter(tag => tag !== value)
     }));
   };
 
@@ -41,10 +34,8 @@ const AddCandidatePage = () => {
     e.preventDefault();
     
     const existingCandidates = JSON.parse(localStorage.getItem('candidates') || '[]');
-    
     const newCandidate = {
-      id: String(Date.now()), 
-      ...formData,
+      id: String(Date.now()), ...formData,
       salary: Number(formData.salary) || 0,
       avatar: 'img/default-avatar.png'
     };
@@ -52,188 +43,92 @@ const AddCandidatePage = () => {
     const updatedCandidates = [...existingCandidates, newCandidate];
     localStorage.setItem('candidates', JSON.stringify(updatedCandidates));
     
-    alert('Кандидат успешно добавлен!');
-    navigate('/catalog'); 
+    setSnackbar({ open: true, message: 'Кандидат успешно добавлен в базу!', severity: 'success' });
+    
+    setTimeout(() => navigate('/catalog'), 2000); 
   };
 
+  const handleCloseSnackbar = () => setSnackbar(prev => ({ ...prev, open: false }));
+
   return (
-    <main className="edit-profile-main">
-      <div className="container edit-profile-container">
-        <div className="edit-profile-card">
-          <div className="edit-header">
-            <h1>Добавить нового кандидата</h1>
-            <p className="edit-subtitle">Заполните информацию о кандидате</p>
-          </div>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          Добавить нового кандидата
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
+          Заполните информацию о кандидате. Поля со звёздочкой (*) обязательны.
+        </Typography>
 
-          <form onSubmit={handleSubmit} className="edit-form">
-            <div className="form-group">
-              <label htmlFor="name">ФИО *</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                value={formData.name}
-                onChange={handleChange}
-                required 
-                placeholder="Например: Иванов Иван"
-              />
-            </div>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            
+            <TextField label="ФИО *" name="name" value={formData.name} onChange={handleChange} required fullWidth />
+            
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField label="Должность *" name="position" value={formData.position} onChange={handleChange} required fullWidth />
+              <TextField label="Опыт работы *" name="experience" value={formData.experience} onChange={handleChange} required fullWidth />
+            </Box>
 
-            <div className="form-group">
-              <label htmlFor="position">Должность / Позиция *</label>
-              <input 
-                type="text" 
-                id="position" 
-                name="position" 
-                value={formData.position}
-                onChange={handleChange}
-                required 
-                placeholder="Например: Frontend-разработчик"
-              />
-            </div>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField label="Зарплатные ожидания, ₽ *" name="salary" type="number" value={formData.salary} onChange={handleChange} required fullWidth />
+              <TextField label="Возраст" name="age" value={formData.age} onChange={handleChange} fullWidth />
+            </Box>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="experience">Опыт работы *</label>
-                <input 
-                  type="text" 
-                  id="experience" 
-                  name="experience" 
-                  value={formData.experience}
-                  onChange={handleChange}
-                  required 
-                  placeholder="Например: 3 года"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="salary">Зарплатные ожидания, ₽ *</label>
-                <input 
-                  type="number" 
-                  id="salary" 
-                  name="salary" 
-                  value={formData.salary}
-                  onChange={handleChange}
-                  required 
-                  placeholder="150000"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="category">Категория *</label>
-              <select 
-                id="category" 
-                name="category" 
+            <FormControl fullWidth required>
+              <InputLabel id="category-label">Категория *</InputLabel>
+              <Select
+                labelId="category-label"
+                name="category"
                 value={formData.category}
+                label="Категория *"
                 onChange={handleChange}
-                required
               >
-                <option value="">Выберите категорию</option>
-                <option value="marketing">Маркетинг</option>
-                <option value="development">Разработка</option>
-                <option value="design">Дизайн</option>
-                <option value="sales">Продажи</option>
-                <option value="analytics">Аналитика</option>
-              </select>
-            </div>
+                <MenuItem value="marketing">Маркетинг</MenuItem>
+                <MenuItem value="development">Разработка</MenuItem>
+                <MenuItem value="design">Дизайн</MenuItem>
+                <MenuItem value="sales">Продажи</MenuItem>
+                <MenuItem value="analytics">Аналитика</MenuItem>
+              </Select>
+            </FormControl>
 
-            <div className="form-group">
-              <label>Формат работы</label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  name="tags" 
-                  value="fulltime"
-                  checked={formData.tags.includes('fulltime')}
-                  onChange={handleTagChange}
-                /> 
-                <span>Полная занятость</span>
-              </label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  name="tags" 
-                  value="parttime"
-                  checked={formData.tags.includes('parttime')}
-                  onChange={handleTagChange}
-                /> 
-                <span>Частичная занятость</span>
-              </label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  name="tags" 
-                  value="remote"
-                  checked={formData.tags.includes('remote')}
-                  onChange={handleTagChange}
-                /> 
-                <span>Удалённо</span>
-              </label>
-            </div>
+            <Typography variant="subtitle2" sx={{ mt: 1 }}>Формат работы:</Typography>
+            <FormGroup row>
+              <FormControlLabel control={<Checkbox name="tags" value="fulltime" checked={formData.tags.includes('fulltime')} onChange={handleTagChange} />} label="Полная занятость" />
+              <FormControlLabel control={<Checkbox name="tags" value="parttime" checked={formData.tags.includes('parttime')} onChange={handleTagChange} />} label="Частичная занятость" />
+              <FormControlLabel control={<Checkbox name="tags" value="remote" checked={formData.tags.includes('remote')} onChange={handleTagChange} />} label="Удалённо" />
+            </FormGroup>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="age">Возраст</label>
-                <input 
-                  type="text" 
-                  id="age" 
-                  name="age" 
-                  value={formData.age}
-                  onChange={handleChange}
-                  placeholder="Например: 30 лет"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="location">Город</label>
-                <input 
-                  type="text" 
-                  id="location" 
-                  name="location" 
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="Например: Москва"
-                />
-              </div>
-            </div>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField label="Город" name="location" value={formData.location} onChange={handleChange} fullWidth />
+              <TextField label="Telegram" name="telegram" value={formData.telegram} onChange={handleChange} fullWidth />
+            </Box>
 
-            <div className="form-group">
-              <label htmlFor="telegram">Telegram</label>
-              <input 
-                type="text" 
-                id="telegram" 
-                name="telegram" 
-                value={formData.telegram}
-                onChange={handleChange}
-                placeholder="@username"
-              />
-            </div>
+            <TextField label="Ссылка на портфолио" name="portfolio" value={formData.portfolio} onChange={handleChange} fullWidth />
+            
+            <TextField label="Причина поиска работы" name="reason" value={formData.reason} onChange={handleChange} fullWidth multiline rows={2} />
+            <TextField label="Общая информация" name="general_info" value={formData.general_info} onChange={handleChange} fullWidth multiline rows={4} />
 
-            <div className="form-group">
-              <label htmlFor="general_info">Общая информация</label>
-              <textarea 
-                id="general_info" 
-                name="general_info" 
-                rows="4"
-                value={formData.general_info}
-                onChange={handleChange}
-                placeholder="Ключевые достижения, экспертиза..."
-              ></textarea>
-            </div>
+            <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'flex-end' }}>
+              <Button variant="outlined" onClick={() => navigate('/catalog')}>Отмена</Button>
+              <Button variant="contained" type="submit">Добавить кандидата</Button>
+            </Box>
+          </Box>
+        </form>
+      </Paper>
 
-            <div className="form-actions">
-              <button type="submit" className="btn-primary">Добавить кандидата</button>
-              <button 
-                type="button" 
-                className="btn-secondary"
-                onClick={() => navigate('/catalog')}
-              >
-                Отмена
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </main>
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={3000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
