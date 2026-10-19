@@ -74,7 +74,7 @@ const CatalogPage = () => {
                 key={candidate.id}
                 candidate={candidate}
                 isSelected={selectedIds.includes(candidate.id)}
-                onSelect={() => setSelectedCandidate(candidate)}
+                 onSelect={() => toggleSelect(candidate.id)}
                 onDelete={handleDelete}
               />
             ))
