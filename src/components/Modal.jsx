@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Typography, 
+  TextField, 
+  Button, 
+  IconButton, 
+  Divider,
+  Box
+} from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState(candidate || {});
+  const [editData, setEditData] = useState({});
 
-  React.useEffect(() => {
-    setEditData(candidate || {});
-    setIsEditing(false);
+  useEffect(() => {
+    if (candidate) {
+      setEditData(candidate);
+      setIsEditing(false);
+    }
   }, [candidate]);
 
-  if (!isOpen || !candidate) return null;
+  if (!candidate) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,120 +37,101 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
   };
 
   return (
-    <div className="modal-overlay active" onClick={onClose}>
-      <div className="modal-window" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
-        <button className="modal-close" onClick={onClose}>&times;</button>
-        
-        <div className="modal-header">
-          <span className="modal-logo-text">ЛИЦА</span>
-          <span className="modal-logo-dot"></span>
-          <span className="modal-logo-text">Кандидаты</span>
-        </div>
-        
+    <Dialog 
+      open={isOpen} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      PaperProps={{ sx: { borderRadius: 2 } }} 
+    >
+      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+          {isEditing ? 'Редактировать кандидата' : candidate.name}
+        </Typography>
+        <IconButton onClick={onClose} sx={{ color: 'grey.500' }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      
+      <Divider />
+
+      <DialogContent sx={{ p: 3 }}>
+        {!isEditing ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Должность</Typography>
+              <Typography variant="body1">{candidate.position}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Опыт работы</Typography>
+              <Typography variant="body1">{candidate.experience}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Зарплатные ожидания</Typography>
+              <Typography variant="body1">{candidate.salary?.toLocaleString()} ₽</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Локация и возраст</Typography>
+              <Typography variant="body1">{candidate.location || 'Не указана'}, {candidate.age || 'Не указан'}</Typography>
+            </Box>
+            
+            <Divider sx={{ my: 1 }} />
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>О себе</Typography>
+              <Typography variant="body2">{candidate.general_info || 'Информация отсутствует'}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Причина поиска</Typography>
+              <Typography variant="body2">{candidate.reason || 'Не указана'}</Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField 
+              label="Имя" name="name" value={editData.name || ''} onChange={handleChange} fullWidth 
+            />
+            <TextField 
+              label="Должность" name="position" value={editData.position || ''} onChange={handleChange} fullWidth 
+            />
+            <TextField 
+              label="Зарплата" name="salary" type="number" value={editData.salary || ''} onChange={handleChange} fullWidth 
+            />
+            <TextField 
+              label="О себе" name="general_info" value={editData.general_info || ''} onChange={handleChange} 
+              fullWidth multiline rows={3} 
+            />
+          </Box>
+        )}
+      </DialogContent>
+
+      <DialogActions sx={{ p: 2, gap: 1 }}>
         {!isEditing ? (
           <>
-            <h2 className="modal-title" style={{ marginBottom: '24px' }}>
-              {candidate.name}
-            </h2>
-            
-            <div style={{ textAlign: 'left', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
-              <p style={{ marginBottom: '12px' }}><strong>Должность:</strong> {candidate.position}</p>
-              <p style={{ marginBottom: '12px' }}><strong>Опыт:</strong> {candidate.experience}</p>
-              <p style={{ marginBottom: '12px' }}><strong>Зарплатные ожидания:</strong> {candidate.salary?.toLocaleString()} ₽</p>
-              <p style={{ marginBottom: '12px' }}><strong>Локация:</strong> {candidate.location || 'Не указана'}</p>
-              <p style={{ marginBottom: '12px' }}><strong>Возраст:</strong> {candidate.age || 'Не указан'}</p>
-              
-              <h3 style={{ margin: '24px 0 12px', fontSize: '16px', color: 'var(--text-main)' }}>О себе:</h3>
-              <p style={{ marginBottom: '12px' }}>{candidate.general_info || 'Информация отсутствует'}</p>
-              
-              <h3 style={{ margin: '24px 0 12px', fontSize: '16px', color: 'var(--text-main)' }}>Причина поиска работы:</h3>
-              <p style={{ marginBottom: '12px' }}>{candidate.reason || 'Не указана'}</p>
-              
-              <p style={{ marginBottom: '12px' }}><strong>Telegram:</strong> {candidate.telegram || 'Не указан'}</p>
-              <p style={{ marginBottom: '12px' }}><strong>Портфолио:</strong> {candidate.portfolio || 'Не указано'}</p>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-              <button className="btn-primary" onClick={() => setIsEditing(true)} style={{ flex: 1 }}>
-                Редактировать
-              </button>
-              {onDelete && (
-                <button 
-                  className="btn-secondary" 
-                  onClick={() => { 
-                    if (window.confirm('Удалить кандидата?')) {
-                      onDelete(candidate.id);
-                      onClose();
-                    }
-                  }} 
-                  style={{ flex: 1, background: '#ff4d4f', color: 'white', border: 'none' }}
-                >
-                  Удалить
-                </button>
-              )}
-            </div>
+            <Button 
+              variant="outlined" 
+              color="error" 
+              onClick={() => { 
+                if (window.confirm('Удалить кандидата?')) {
+                  onDelete(candidate.id);
+                  onClose();
+                }
+              }}
+              sx={{ mr: 'auto' }} 
+            >
+              Удалить
+            </Button>
+            <Button variant="text" onClick={onClose}>Закрыть</Button>
+            <Button variant="contained" onClick={() => setIsEditing(true)}>Редактировать</Button>
           </>
         ) : (
           <>
-            <h2 className="modal-title" style={{ marginBottom: '24px' }}>
-              Редактировать кандидата
-            </h2>
-            
-            <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>Имя:</label>
-                <input 
-                  type="text" 
-                  name="name" 
-                  value={editData.name || ''} 
-                  onChange={handleChange}
-                  className="modal-input"
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>Должность:</label>
-                <input 
-                  type="text" 
-                  name="position" 
-                  value={editData.position || ''} 
-                  onChange={handleChange}
-                  className="modal-input"
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>Зарплата:</label>
-                <input 
-                  type="number" 
-                  name="salary" 
-                  value={editData.salary || ''} 
-                  onChange={handleChange}
-                  className="modal-input"
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>О себе:</label>
-                <textarea 
-                  name="general_info" 
-                  value={editData.general_info || ''} 
-                  onChange={handleChange}
-                  className="modal-input"
-                  rows="3"
-                />
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-              <button className="btn-primary" onClick={handleSave} style={{ flex: 1 }}>
-                Сохранить
-              </button>
-              <button className="btn-secondary" onClick={() => setIsEditing(false)} style={{ flex: 1 }}>
-                Отмена
-              </button>
-            </div>
+            <Button variant="text" onClick={() => setIsEditing(false)}>Отмена</Button>
+            <Button variant="contained" onClick={handleSave}>Сохранить</Button>
           </>
         )}
-      </div>
-    </div>
+      </DialogActions>
+    </Dialog>
   );
 };
 
