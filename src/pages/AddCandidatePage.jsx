@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { 
   Container, Paper, Typography, TextField, Button, Box,
   FormControl, InputLabel, Select, MenuItem,
   FormGroup, FormControlLabel, Checkbox,
-  Snackbar, Alert
+  Snackbar, Alert,
+  Breadcrumbs, Link as MuiLink
 } from '@mui/material';
+import { Home as HomeIcon } from '@mui/icons-material';
 
 const AddCandidatePage = () => {
   const navigate = useNavigate();
@@ -52,6 +54,33 @@ const AddCandidatePage = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      
+      <Breadcrumbs 
+        separator="/" 
+        aria-label="breadcrumb" 
+        sx={{ mb: 3, fontSize: 14 }}
+      >
+        <MuiLink
+          component={RouterLink}
+          to="/"
+          underline="hover"
+          color="inherit"
+          sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+        >
+          <HomeIcon fontSize="small" />
+          Главная
+        </MuiLink>
+        <MuiLink
+          component={RouterLink}
+          to="/catalog"
+          underline="hover"
+          color="inherit"
+        >
+          Каталог
+        </MuiLink>
+        <Typography color="text.primary">Добавить кандидата</Typography>
+      </Breadcrumbs>
+
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
