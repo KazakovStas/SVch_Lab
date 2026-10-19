@@ -36,65 +36,68 @@ const CatalogPage = () => {
   };
 
   return (
-    <main className="catalog-main">
-      <div className="container catalog-container">
-        <aside className="filters-sidebar">
-          <div className="filters-header">
-            <h2>Фильтры</h2>
-            <button className="clear-filters" onClick={clearFilters}>Очистить</button>
-          </div>
-          <div className="filter-group">
-            <h3>Зарплата, ₽</h3>
-            <div className="filter-range">
-              <input 
-                type="number" 
-                placeholder="от" 
-                value={salaryMin}
-                onChange={(e) => setSalaryMin(e.target.value)}
-              />
-              <input 
-                type="number" 
-                placeholder="до" 
-                value={salaryMax}
-                onChange={(e) => setSalaryMax(e.target.value)}
-              />
+    <>
+      <main className="catalog-main">
+        <div className="container catalog-container">
+          <aside className="filters-sidebar">
+            <div className="filters-header">
+              <h2>Фильтры</h2>
+              <button className="clear-filters" onClick={clearFilters}>Очистить</button>
             </div>
+            <div className="filter-group">
+              <h3>Зарплата, ₽</h3>
+              <div className="filter-range">
+                <input 
+                  type="number" 
+                  placeholder="от" 
+                  value={salaryMin}
+                  onChange={(e) => setSalaryMin(e.target.value)}
+                />
+                <input 
+                  type="number" 
+                  placeholder="до" 
+                  value={salaryMax}
+                  onChange={(e) => setSalaryMax(e.target.value)}
+                />
+              </div>
+            </div>
+            <button className="apply-filters btn-primary">Применить</button>
+          </aside>
+
+          <div className="candidates-grid">
+            {filteredCandidates.length === 0 ? (
+              <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                Кандидаты не найдены или удалены.
+              </p>
+            ) : (
+              filteredCandidates.map(candidate => (
+                <CandidateCard
+                  key={candidate.id}
+                  candidate={candidate}
+                  isSelected={selectedIds.includes(candidate.id)}
+                  onSelect={() => {
+                    toggleSelect(candidate.id);
+                    setSelectedCandidate(candidate);
+                  }}
+                  onDelete={handleDelete}
+                />
+              ))
+            )}
           </div>
-          <button className="apply-filters btn-primary">Применить</button>
-        </aside>
-
-        <div className="candidates-grid">
-          {filteredCandidates.length === 0 ? (
-            <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-              Кандидаты не найдены или удалены.
-            </p>
-          ) : (
-            filteredCandidates.map(candidate => (
-              <CandidateCard
-                key={candidate.id}
-                candidate={candidate}
-                isSelected={selectedIds.includes(candidate.id)}
-                 onSelect={() => toggleSelect(candidate.id)}
-                onDelete={handleDelete}
-              />
-            ))
-          )}
         </div>
-      </div>
+      </main>
 
-     <Modal 
-  isOpen={!!selectedCandidate} 
-  onClose={() => setSelectedCandidate(null)} 
-  candidate={selectedCandidate}
-  onEdit={(updatedCandidate) => {
-    setCandidates(candidates.map(c => 
-      c.id === updatedCandidate.id ? updatedCandidate : c
-    ));
-    setSelectedCandidate(updatedCandidate);
-  }}
-  onDelete={handleDelete}
-/>
-    </main>
+      <Modal 
+        isOpen={!!selectedCandidate} 
+        onClose={() => setSelectedCandidate(null)} 
+        candidate={selectedCandidate}
+        onEdit={(updated) => {
+          setCandidates(candidates.map(c => c.id === updated.id ? updated : c));
+          setSelectedCandidate(updated);
+        }}
+        onDelete={handleDelete}
+      />
+    </>
   );
 };
 

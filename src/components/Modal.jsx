@@ -24,8 +24,6 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
     }
   }, [candidate]);
 
-  if (!candidate) return null;
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditData(prev => ({ ...prev, [name]: value }));
@@ -42,11 +40,11 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
       onClose={onClose} 
       maxWidth="sm" 
       fullWidth
-      PaperProps={{ sx: { borderRadius: 2 } }} 
+      PaperProps={{ sx: { borderRadius: 2 } }}
     >
       <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-          {isEditing ? 'Редактировать кандидата' : candidate.name}
+          {isEditing ? 'Редактировать кандидата' : candidate?.name || 'Кандидат'}
         </Typography>
         <IconButton onClick={onClose} sx={{ color: 'grey.500' }}>
           <CloseIcon />
@@ -60,47 +58,38 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">Должность</Typography>
-              <Typography variant="body1">{candidate.position}</Typography>
+              <Typography variant="body1">{candidate?.position}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">Опыт работы</Typography>
-              <Typography variant="body1">{candidate.experience}</Typography>
+              <Typography variant="body1">{candidate?.experience}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">Зарплатные ожидания</Typography>
-              <Typography variant="body1">{candidate.salary?.toLocaleString()} ₽</Typography>
+              <Typography variant="body1">{candidate?.salary?.toLocaleString()} ₽</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">Локация и возраст</Typography>
-              <Typography variant="body1">{candidate.location || 'Не указана'}, {candidate.age || 'Не указан'}</Typography>
+              <Typography variant="body1">{candidate?.location || 'Не указана'}, {candidate?.age || 'Не указан'}</Typography>
             </Box>
             
             <Divider sx={{ my: 1 }} />
             
             <Box>
               <Typography variant="subtitle2" color="text.secondary" gutterBottom>О себе</Typography>
-              <Typography variant="body2">{candidate.general_info || 'Информация отсутствует'}</Typography>
+              <Typography variant="body2">{candidate?.general_info || 'Информация отсутствует'}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary" gutterBottom>Причина поиска</Typography>
-              <Typography variant="body2">{candidate.reason || 'Не указана'}</Typography>
+              <Typography variant="body2">{candidate?.reason || 'Не указана'}</Typography>
             </Box>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField 
-              label="Имя" name="name" value={editData.name || ''} onChange={handleChange} fullWidth 
-            />
-            <TextField 
-              label="Должность" name="position" value={editData.position || ''} onChange={handleChange} fullWidth 
-            />
-            <TextField 
-              label="Зарплата" name="salary" type="number" value={editData.salary || ''} onChange={handleChange} fullWidth 
-            />
-            <TextField 
-              label="О себе" name="general_info" value={editData.general_info || ''} onChange={handleChange} 
-              fullWidth multiline rows={3} 
-            />
+            <TextField label="Имя" name="name" value={editData.name || ''} onChange={handleChange} fullWidth />
+            <TextField label="Должность" name="position" value={editData.position || ''} onChange={handleChange} fullWidth />
+            <TextField label="Зарплата" name="salary" type="number" value={editData.salary || ''} onChange={handleChange} fullWidth />
+            <TextField label="О себе" name="general_info" value={editData.general_info || ''} onChange={handleChange} fullWidth multiline rows={3} />
           </Box>
         )}
       </DialogContent>
@@ -117,7 +106,7 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
                   onClose();
                 }
               }}
-              sx={{ mr: 'auto' }} 
+              sx={{ mr: 'auto' }}
             >
               Удалить
             </Button>

@@ -37,21 +37,22 @@ const Header = () => {
         </Box>
 
         <TextField
-          size="small"
-          placeholder="Поиск по навыкам..."
-          sx={{ 
-            bgcolor: 'rgba(255,255,255,0.15)', 
-            borderRadius: 1, 
-            '& .MuiInputBase-root': { color: 'white' } 
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: 'white' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
+  size="small"
+  placeholder="Поиск по навыкам..."
+  sx={{ 
+    bgcolor: 'rgba(255,255,255,0.15)', 
+    borderRadius: 1,
+    '& .MuiInputBase-root': { color: 'white' },
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' }
+  }}
+  InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <SearchIcon sx={{ color: 'white' }} />
+      </InputAdornment>
+    ),
+  }}
+/>
 
         <Box>
           <IconButton
