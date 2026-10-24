@@ -8,8 +8,12 @@ import {
   Breadcrumbs, Link as MuiLink
 } from '@mui/material';
 import { Home as HomeIcon } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCandidate, clearError } from '../redux/candidatesSlice';
 
 const AddCandidatePage = () => {
+  const dispatch = useDispatch();
+const error = useSelector((state) => state.candidates.error); // Читаем ошибку из Redux
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -33,22 +37,27 @@ const AddCandidatePage = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    const existingCandidates = JSON.parse(localStorage.getItem('candidates') || '[]');
-    const newCandidate = {
-      id: String(Date.now()), ...formData,
-      salary: Number(formData.salary) || 0,
-      avatar: 'img/default-avatar.png'
-    };
-    
-    const updatedCandidates = [...existingCandidates, newCandidate];
-    localStorage.setItem('candidates', JSON.stringify(updatedCandidates));
-    
-    setSnackbar({ open: true, message: 'Кандидат успешно добавлен в базу!', severity: 'success' });
-    
-    setTimeout(() => navigate('/catalog'), 2000); 
+  e.preventDefault();
+  
+  const newCandidate = {
+    ...formData,
+    salary: Number(formData.salary) || 0,
+    avatar: 'img/default-avatar.png'
   };
+  
+  // Отправляем данные в Redux. Redux сам проверит их через функцию prepare
+  const action = dispatch(addCandidate(newCandidate));
+  
+  // Проверяем результат (если prepare вернул payload:null, значит ошибка валидации)
+  if (action.payload) {
+    setSnackbar({ open: true, message: 'Кандидат успешно добавлен в базу!', severity: 'success' });
+    setTimeout(() => navigate('/catalog'), 2000); 
+  } else {
+    // Если ошибка, показываем её в Snackbar
+    setSnackbar({ open: true, message: action.error || 'Ошибка при добавлении', severity: 'error' });
+    dispatch(clearError()); // Сбрасываем ошибку в Redux
+  }
+};
 
   const handleCloseSnackbar = () => setSnackbar(prev => ({ ...prev, open: false }));
 
@@ -89,6 +98,12 @@ const AddCandidatePage = () => {
         <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
           Заполните информацию о кандидате. Поля со звёздочкой (*) обязательны.
         </Typography>
+
+{error && (
+  <Alert severity="error" sx={{ mb: 2 }}>
+    {error}
+  </Alert>
+)}
 
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import candidatesData from '../data/candidates.json';
 import CandidateCard from '../components/CandidateCard';
 import Modal from '../components/Modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteCandidate, updateCandidate } from '../redux/candidatesSlice';
 
 const CatalogPage = () => {
-  const [candidates, setCandidates] = useState(candidatesData);
+  const candidates = useSelector((state) => state.candidates.items);
+  const dispatch = useDispatch();
+
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  
   const [salaryMin, setSalaryMin] = useState('');
   const [salaryMax, setSalaryMax] = useState('');
 
   const handleDelete = (id) => {
     if (window.confirm('Вы уверены, что хотите удалить этого кандидата из базы?')) {
-      setCandidates(candidates.filter(c => c.id !== id));
+      dispatch(deleteCandidate(id)); 
     }
   };
 
@@ -23,6 +25,7 @@ const CatalogPage = () => {
     );
   };
 
+  // Фильтрация работает с данными, полученными из Redux
   const filteredCandidates = candidates.filter(candidate => {
     const salary = candidate.salary || 0;
     const min = salaryMin ? Number(salaryMin) : 0;
@@ -86,14 +89,13 @@ const CatalogPage = () => {
           </div>
         </div>
       </main>
-
       <Modal 
         isOpen={!!selectedCandidate} 
         onClose={() => setSelectedCandidate(null)} 
         candidate={selectedCandidate}
         onEdit={(updated) => {
-          setCandidates(candidates.map(c => c.id === updated.id ? updated : c));
-          setSelectedCandidate(updated);
+          dispatch(updateCandidate(updated)); 
+          setSelectedCandidate(updated);      
         }}
         onDelete={handleDelete}
       />
