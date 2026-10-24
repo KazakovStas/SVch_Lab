@@ -1,14 +1,15 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
+import candidatesData from '../data/candidates.json'; 
 
 const initialState = {
-  items: [],        
-  status: 'idle',   
-  error: null,    
+  items: candidatesData,  
+  status: 'idle',
+  error: null,
 };
 
 const candidatesSlice = createSlice({
-  name: 'candidates',  
-  initialState,       
+  name: 'candidates',
+  initialState,
   
   reducers: {
     addCandidate: {
@@ -34,7 +35,7 @@ const candidatesSlice = createSlice({
         
         return {
           payload: {
-            id: nanoid(),  
+            id: nanoid(),
             ...candidateData,
           },
         };
@@ -42,9 +43,9 @@ const candidatesSlice = createSlice({
       reducer: (state, action) => {
         if (action.payload) {
           state.items.push(action.payload);
-          state.error = null;  
+          state.error = null;
         } else {
-          state.error = action.error; 
+          state.error = action.error;
         }
       },
     },
@@ -59,7 +60,7 @@ const candidatesSlice = createSlice({
       
       if (!updatedData.name || !updatedData.name.trim()) {
         state.error = 'Имя не может быть пустым';
-        return;  
+        return;
       }
       
       const index = state.items.findIndex((c) => c.id === id);
