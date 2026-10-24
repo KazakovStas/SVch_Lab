@@ -110,6 +110,7 @@ const Modal = ({ isOpen, onClose, candidate, onEdit, onDelete }) => {
               }}
               sx={{ mr: 'auto' }}
             >
+              
               Удалить
             </Button>
             <Button variant="text" onClick={onClose}>Закрыть</Button>
